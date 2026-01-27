@@ -7,10 +7,10 @@
 
 void sendPieceToMqt(MqttClient &mqttClient, piece_entity_t piece);
 
-TetrisGame::TetrisGame(MqttClient &mqttClient) : _selected_piece(), _next_piece()
+TetrisGame::TetrisGame(MqttClient &mqttClient) : _selected_piece(), _next_piece(), _score(0), _loose(0), _playing(0),
+                                                 _seed(0)
 {
     _mqttClient = &mqttClient;
-    init();
 }
 
 void TetrisGame::init()
@@ -30,7 +30,7 @@ void TetrisGame::init()
     data[1] = static_cast<uint8_t>(_seed & 0xFF);
     data[2] = static_cast<uint8_t>(_selected_piece.type);
     data[3] = static_cast<uint8_t>(_next_piece.type);
-    _mqttClient->publish("tetris/startup", data, 4);
+    _mqttClient->publish("tetris/startUp", data, 4);
 }
 
 void TetrisGame::start()
@@ -80,6 +80,7 @@ void TetrisGame::tick()
 
     if (collided != COLLISION_DETECTED)
     {
+        Serial.println("tick");
         _selected_piece.pos.y++;
         sendPieceToMqt(*_mqttClient, _selected_piece);
         return;
@@ -87,12 +88,14 @@ void TetrisGame::tick()
 
     if (_selected_piece.pos.y == 0)
     {
+        Serial.println("loose");
         _loose = 1;
         data[0] = 1;
         _mqttClient->publish("tetris/loose", data, 1);
         return;
     }
 
+    Serial.println("other");
     _gameMap.place(_selected_piece);
     _selected_piece = _next_piece;
     generatePiece(_next_piece);

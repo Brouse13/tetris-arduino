@@ -5,16 +5,16 @@
 #include <mqttClient.h>
 #include <Arduino.h>
 
-MqttClient* MqttClient::_instance = nullptr;
+MqttClient* MqttClient::_instance;
 
-void MqttClient::mqttCallback(char* topic, byte* payload, unsigned int length)
+void MqttClient::mqttCallback(char* topic, uint8_t* payload, unsigned int length)
 {
     if (!_instance) return;
 
     _instance->handleMessage(topic, payload, length);
 }
 
-void MqttClient::handleMessage(char* topic, byte* payload, unsigned int length)
+void MqttClient::handleMessage(char* topic, uint8_t* payload, unsigned int length)
 {
     for (const auto &callback : _callbacks)
     {
@@ -33,9 +33,6 @@ void MqttClient::setup(const char broker_host[], const uint16_t broker_port)
         _ethernet_configuration.dns_server,
         _ethernet_configuration.gateway
     );
-
-    Serial.println(broker_host);
-    Serial.println(broker_port);
 
     _mqtt_client.setServer(broker_host, broker_port);
     _mqtt_client.setCallback(mqttCallback);
@@ -65,6 +62,8 @@ void MqttClient::publish(const char* topic, const uint8_t* message, const uint16
 
 void MqttClient::loop()
 {
+    if (!_mqtt_client.connected()) return;
+
     _mqtt_client.loop();
 }
 
@@ -78,6 +77,7 @@ void MqttClient::subscribe(const char* topic, const MqttCallback callback)
     entry.callback = callback;
 
     _callbacks.push_back(entry);
+    _mqtt_client.subscribe(topic);
 }
 
 void MqttClient::unsubscribe(const char* topic)

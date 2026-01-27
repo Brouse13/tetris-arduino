@@ -101,9 +101,9 @@ private:
     PubSubClient                        _mqtt_client;
     StaticVector<callback_entry_t, 10>  _callbacks;
 
-    static void mqttCallback(char* topic, byte* payload, unsigned int length);
+    static void mqttCallback(char* topic, uint8_t* payload, unsigned int length);
 
-    void handleMessage(char* topic, byte* payload, unsigned int length);
+    void handleMessage(char* topic, uint8_t* payload, unsigned int length);
 };
 
 #endif //MQTTCLIENT_H

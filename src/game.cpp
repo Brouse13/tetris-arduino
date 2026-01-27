@@ -11,7 +11,7 @@
 #include <timer.h>
 
 // Game startup
-void onStartUp(byte* payload, unsigned int length);
+void onInit(byte* payload, unsigned int length);
 TetrisGame game(mqttClient);
 
 // Process controls
@@ -24,10 +24,13 @@ void onRotate(byte* payload, unsigned int length);
 
 // Tick game
 Timer timer1;
-uint8_t tick = 0;
+volatile uint8_t tick = 0;
 
 
-ISR(TIMER1_COMPA_vect) { tick = 1; }
+ISR(TIMER1_COMPA_vect)
+{
+    tick = 1;
+}
 
 void setup()
 {
@@ -37,7 +40,7 @@ void setup()
     mqttClient.setup(MQTT_HOST, MQTT_PORT);
     mqttClient.connect(MQTT_CLIENT_ID);
 
-    mqttClient.subscribe("tetris/startup",  onStartUp);
+    mqttClient.subscribe("tetris/onInit",   onInit);
     mqttClient.subscribe("tetris/move",     onMove);
     mqttClient.subscribe("tetris/rotate",   onRotate);
     game.init();
@@ -48,27 +51,21 @@ void setup()
 
 void loop()
 {
-    uint8_t time = 0;
     while (true)
     {
         if (tick)
         {
             processControls();
             game.tick();
-            tick = 0;
-        }
-
-        time++;
-        if (time == 100)
-        {
             mqttClient.loop();
-            time = 0;
+            tick = 0;
         }
     }
 }
 
-void onStartUp(byte* payload, unsigned int length)
+void onInit(byte* payload, unsigned int length)
 {
+    game.init();
     game.start();
 }
 
