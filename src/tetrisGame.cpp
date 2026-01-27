@@ -4,6 +4,8 @@
 
 #include <tetrisGame.h>
 
+void sendPieceToMqt(MqttClient &mqttClient, piece_entity_t piece);
+
 TetrisGame::TetrisGame(MqttClient &mqttClient) : _selected_piece(), _next_piece()
 {
     _mqttClient = &mqttClient;
@@ -78,9 +80,7 @@ void TetrisGame::tick()
     if (collided != COLLISION_DETECTED)
     {
         _selected_piece.pos.y++;
-        data[0] = _selected_piece.pos.x;
-        data[1] = _selected_piece.pos.y;
-        _mqttClient->publish("tetris/newPos", data, 2);
+        sendPieceToMqt(*_mqttClient, _selected_piece);
         return;
     }
 
@@ -116,5 +116,30 @@ void TetrisGame::generatePiece(piece_entity_t &piece)
     piece.type = static_cast<piece_t>(random(1L, 6L));
     piece.rotation = rotation_t::R0;
     piece.pos = START_PIECE_POSITION;
+}
+
+void sendPieceToMqt(MqttClient &mqttClient, const piece_entity_t piece)
+{
+    // 4 block 2 coords with 2 bytes each piece
+    constexpr uint8_t DATA_LENGTH = 4 * 2 * 2;
+    uint8_t data[DATA_LENGTH];
+
+    StaticVector<pos_t, 4> pieceData;
+    getBottomPosition(piece, pieceData);
+
+    uint8_t i = 0;
+    for (const auto &pos : pieceData)
+    {
+        const auto newPos = worldPos(pos);
+
+        data[i]     = static_cast<uint8_t>(newPos.x >> 8);
+        data[i+1]   = static_cast<uint8_t>(newPos.x & 0xFF);
+        data[i+2]   = static_cast<uint8_t>(newPos.y >> 8);
+        data[i+3]   = static_cast<uint8_t>(newPos.y & 0xFF);
+
+        i += 4;
+    }
+
+    mqttClient.publish("tetris/newPos", data, DATA_LENGTH);
 }
 
