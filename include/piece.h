@@ -28,7 +28,7 @@ typedef struct piece_entity
 
 pos_t rotate(const pos_t &pos, rotation_t rotation);
 
-pos_t worldPos(const pos_t &local);
+pos_t worldPos(const piece_entity_t &piece, const pos_t &local);
 
 void getBottomPosition(const piece_entity_t &piece, StaticVector<pos_t, 4> &out);
 

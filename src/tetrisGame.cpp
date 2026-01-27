@@ -3,6 +3,7 @@
 //
 
 #include <tetrisGame.h>
+#include <piece.h>
 
 void sendPieceToMqt(MqttClient &mqttClient, piece_entity_t piece);
 
@@ -130,7 +131,7 @@ void sendPieceToMqt(MqttClient &mqttClient, const piece_entity_t piece)
     uint8_t i = 0;
     for (const auto &pos : pieceData)
     {
-        const auto newPos = worldPos(pos);
+        const auto newPos = worldPos(piece, pos);
 
         data[i]     = static_cast<uint8_t>(newPos.x >> 8);
         data[i+1]   = static_cast<uint8_t>(newPos.x & 0xFF);
