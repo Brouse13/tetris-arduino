@@ -10,14 +10,22 @@
 #include <tetrisGame.h>
 #include <timer.h>
 
+// Game startup
 void onStartUp(byte* payload, unsigned int length);
+TetrisGame game(mqttClient);
+
+// Process controls
+uint8_t askForRotation  = 0;
+auto askForMovement     = direction::NONE;
+
+void processControls();
 void onMove(byte* payload, unsigned int length);
 void onRotate(byte* payload, unsigned int length);
 
-TetrisGame game(mqttClient);
-
+// Tick game
 Timer timer1;
 uint8_t tick = 0;
+
 
 ISR(TIMER1_COMPA_vect) { tick = 1; }
 
@@ -43,9 +51,14 @@ void loop()
     uint8_t time = 0;
     while (true)
     {
-        game.tick();
-        time++;
+        if (tick)
+        {
+            processControls();
+            game.tick();
+            tick = 0;
+        }
 
+        time++;
         if (time == 100)
         {
             mqttClient.loop();
@@ -64,16 +77,31 @@ void onMove(byte* payload, unsigned int length)
     if (length != 1) return;
 
     const auto direction = static_cast<direction_t>(payload[0]);
-    game.move(direction);
+    askForMovement = direction;
 }
 
 void onRotate(byte* payload, unsigned int length)
 {
-    if (length != 1) return;
-
-    const auto rotation = static_cast<rotation_t>(payload[0]);
-    game.rotate(rotation);
+    askForRotation = 1;
 }
+
+void processControls()
+{
+    // Process rotation
+    if (askForRotation)
+    {
+        game.rotate();
+        askForRotation = 0;
+    }
+
+    // Process movement
+    if (askForMovement != direction::NONE)
+    {
+        game.move(askForMovement);
+        askForMovement = direction::NONE;
+    }
+}
+
 
 #endif // GAME
 

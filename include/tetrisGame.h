@@ -29,7 +29,7 @@ public:
 
     void move(direction_t direction);
 
-    void rotate(rotation_t rotation);
+    void rotate();
 
     void tick();
 private:

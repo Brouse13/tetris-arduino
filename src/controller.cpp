@@ -12,7 +12,7 @@
 
 #define PIN_JOYSTICK_Y   A0
 #define PIN_JOYSTICK_X   A1
-#define PIN_JOYSTICK_BTN 4
+#define PIN_JOYSTICK_BTN 13
 
 rotation_t rotation;
 uint8_t button;
@@ -30,9 +30,6 @@ void setup()
 
     // When a new piece arrives or the game starts, the direction must be reseted
     mqttClient.setup(MQTT_HOST, MQTT_PORT);
-
-    mqttClient.subscribe("tetris/newPiece", resetPieceRotation);
-    mqttClient.subscribe("tetris/startup",  resetPieceRotation);
 
     mqttClient.connect("joystick");
 }
@@ -77,22 +74,13 @@ void processMovement()
 
 void processRotation()
 {
-    uint8_t rotated = false;
     const uint16_t yValue = analogRead(PIN_JOYSTICK_Y);
 
-    if (yValue < 400)
-    {
-        rotation = static_cast<rotation_t>(static_cast<uint8_t>(rotation) + 1 % 4);
-        rotated = true;
-    }
+    if (yValue > 400) return;;
 
-    if (!rotated) return;
-
-    const uint8_t data[1] = { static_cast<uint8_t>(rotation) };
+    constexpr uint8_t data[1] = { 1 };
     mqttClient.publish("tetris/rotate", data, 1);
     Serial.println("rotate");
 }
-
-void resetPieceRotation(byte* payload, unsigned int length) { rotation = rotation::R0; }
 
 #endif // CONTROLLER_H

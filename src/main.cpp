@@ -1,3 +1,4 @@
-#define CONTROLLER_H
+#define GAME
 
 #include <controller.cpp>
+#include <game.cpp>
