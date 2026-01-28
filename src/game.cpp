@@ -43,10 +43,9 @@ void setup()
     mqttClient.subscribe("tetris/onInit",   onInit);
     mqttClient.subscribe("tetris/move",     onMove);
     mqttClient.subscribe("tetris/rotate",   onRotate);
-    game.init();
 
-    timer1.setup(MODE_NORMAL, SCALING1024);
-    timer1.start(TICK_1024_1s);
+    timer1.setup(MODE_CTC, SCALING1024);
+    timer1.start(TICK_1024_1s - 300);
 }
 
 void loop()

@@ -26,8 +26,17 @@ uint16_t GameMap::hasCollided(const piece_entity_t &entity) const
         const uint16_t idx = index(block);
 
         if (!inBounds(block))   return INDEX_OUT_OF_BOUNDS;
-        if (_map[idx])          return COLLISION_DETECTED;
+
+       /*
+        Serial.print(idx);
+         Serial.print(" : ");
+         Serial.print(_map[idx]);
+         Serial.print(", ");
+        */
+
+        if (_map[idx] != 0)     return COLLISION_DETECTED;
     }
+    //Serial.println("");
 
     return COLLISION_NOT_DETECTED;
 }
@@ -39,9 +48,14 @@ uint8_t GameMap::place(const piece_entity_t &entity)
     for (const auto &block : blocks)
     {
         const uint16_t idx = index(block);
+        /*
+        Serial.print(idx);
+        Serial.print(" ");
+        */
 
         _map[idx] = static_cast<uint8_t>(entity.type);
     }
+    //Serial.println("");
     return 1;
 }
 
@@ -60,6 +74,8 @@ uint8_t GameMap::checkLine()
 
         memmove(start, copyStart, rowSize * y);
         memset(start, 0, rowSize);
+
+        clearedLines++;
 
         ++y;
     }

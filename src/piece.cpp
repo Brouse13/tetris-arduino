@@ -27,6 +27,12 @@ pos_t worldPos(const piece_entity_t &piece, const pos_t &local)
 
 void getBottomPosition(const piece_entity_t &piece, StaticVector<pos_t, 4> &out)
 {
+    /*
+    Serial.print("Act: X: ");
+    Serial.print(piece.pos.x);
+    Serial.print("Y: ");
+    Serial.println(piece.pos.y);
+    */
     out.clear();
 
     const pos_t* shape = nullptr;
@@ -85,6 +91,13 @@ void getBottomPosition(const piece_entity_t &piece, StaticVector<pos_t, 4> &out)
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        out.push_back(worldPos(piece, shape[i]));
+        auto newPos = worldPos(piece, shape[i]);
+        /*
+        Serial.print("X: ");
+        Serial.print(newPos.x);
+        Serial.print("Y: ");
+        Serial.println(newPos.y);
+        */
+        out.push_back(newPos);
     }
 }
