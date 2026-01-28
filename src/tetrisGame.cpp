@@ -15,13 +15,15 @@ TetrisGame::TetrisGame(MqttClient &mqttClient) : _selected_piece(), _next_piece(
 
 void TetrisGame::init()
 {
-    generatePiece(_selected_piece);
+    _seed = analogRead(A8);
+    rand();
+    randomSeed(_seed);
     generatePiece(_next_piece);
+    generatePiece(_selected_piece);
     _gameMap.clear();
     _score = 0;
     _loose = 0;
     _playing = 0;
-    _seed = analogRead(A0);
 
     uint8_t data[4];
 
@@ -80,8 +82,6 @@ void TetrisGame::tick()
 
     if (collided != COLLISION_DETECTED)
     {
-        Serial.println("tick");
-        _selected_piece.pos.y++;
         sendPieceToMqt(*_mqttClient, _selected_piece);
         return;
     }
@@ -117,7 +117,8 @@ void TetrisGame::tick()
 
 void TetrisGame::generatePiece(piece_entity_t &piece)
 {
-    piece.type = static_cast<piece_t>(random(1L, 6L));
+    uint8_t rand = random(1, 7) + 1;
+    piece.type = static_cast<piece_t>(rand);
     piece.rotation = rotation_t::R0;
     piece.pos = START_PIECE_POSITION;
 }

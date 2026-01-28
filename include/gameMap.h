@@ -5,7 +5,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#define MAP_WIDTH   20
+#define MAP_WIDTH   10
 #define MAP_HEIGHT  20
 
 #include <types.h>
