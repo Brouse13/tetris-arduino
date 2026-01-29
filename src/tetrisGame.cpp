@@ -57,7 +57,7 @@ void TetrisGame::move(const direction_t direction)
         default:                                             break;
     }
 
-    if (_gameMap.hasCollided(_selected_piece) == COLLISION_DETECTED) return;
+    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED) return;
 
     _selected_piece.pos = currentPosition;
 }
@@ -67,7 +67,7 @@ void TetrisGame::rotate()
     const auto currentRotation = _selected_piece.rotation;
 
     _selected_piece.rotation = static_cast<rotation_t>((static_cast<uint8_t>(_selected_piece.rotation) + 1) % 4);
-    if (_gameMap.hasCollided(_selected_piece) == COLLISION_DETECTED) return;
+    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED) return;
 
     _selected_piece.rotation = currentRotation;
 }
