@@ -14,10 +14,12 @@ TetrisGame game(mqttClient);
 
 // Process controls
 uint8_t askForRotation  = 0;
+uint8_t sack            = 0;
 auto askForMovement     = direction::NONE;
 
 void processControls();
 void onMove(byte* payload, unsigned int length);
+void onButton(byte* payload, unsigned int length);
 void onRotate(byte* payload, unsigned int length);
 
 // Tick game
@@ -39,6 +41,7 @@ void setup()
     mqttClient.connect(MQTT_CLIENT_ID);
 
     mqttClient.subscribe("tetris/onInit",   onInit);
+    mqttClient.subscribe("tetris/button",   onButton);
     mqttClient.subscribe("tetris/move",     onMove);
     mqttClient.subscribe("tetris/rotate",   onRotate);
 
@@ -60,6 +63,12 @@ void loop()
         delay(100);
     }
 }
+
+void onButton(byte* payload, unsigned int length)
+{
+    sack = 1;
+}
+
 
 void onInit(byte* payload, unsigned int length)
 {
@@ -83,6 +92,13 @@ void onRotate(byte* payload, unsigned int length)
 //TODO: Send mqtt to Processing to update move
 void processControls()
 {
+    // Process sack
+    if (sack)
+    {
+        game.sack();
+        sack = 0;
+    }
+
     // Process rotation
     if (askForRotation)
     {

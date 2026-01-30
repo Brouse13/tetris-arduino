@@ -17,6 +17,7 @@ typedef enum class piece : uint8_t
     Z_SHAPE = 5,
     J_SHAPE = 6,
     S_SHAPE = 7,
+    NONE    = 8,
 } piece_t;
 
 typedef struct piece_entity

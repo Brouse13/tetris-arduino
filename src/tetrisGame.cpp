@@ -7,8 +7,8 @@
 
 void saveCurrentPostion(uint8_t *data, piece_entity_t piece);
 
-TetrisGame::TetrisGame(MqttClient &mqttClient) : _selected_piece(), _next_piece(), _score(0), _loose(0), _playing(0),
-                                                 _seed(0)
+TetrisGame::TetrisGame(MqttClient &mqttClient) : _selected_piece(), _next_piece(), _sack_piece(), _score(0),
+                                                 _loose(0), _playing(0), _seed(0)
 {
     _mqttClient = &mqttClient;
 }
@@ -19,6 +19,7 @@ void TetrisGame::init()
     randomSeed(_seed);
     generatePiece(_next_piece);
     generatePiece(_selected_piece);
+    _sack_piece = piece_t::NONE;
     _gameMap.clear();
     _score = 0;
     _loose = 0;
@@ -83,6 +84,33 @@ void TetrisGame::rotate()
     _selected_piece.rotation = currentRotation;
 }
 
+void TetrisGame::sack()
+{
+    if (_this_tick) return;
+
+    uint8_t data[4 * 2 * 2 + 1];
+    if (_sack_piece == piece_t::NONE)
+    {
+        _sack_piece = _selected_piece.type;
+        generatePiece(_selected_piece);
+        _selected_piece.type = _next_piece.type;
+        generatePiece(_next_piece);
+        data[0] = static_cast<uint8_t>(_next_piece.type);
+    }
+    else
+    {
+        const auto piece = _sack_piece;
+        _sack_piece = _selected_piece.type;
+        generatePiece(_selected_piece);
+        _selected_piece.type = piece;
+        _this_tick = true;
+        data[0] = 1;
+    }
+
+    saveCurrentPostion(&data[1], _selected_piece);
+    _mqttClient->publish("tetris/sack", data, 4 * 2 * 2 + 1);
+}
+
 
 void TetrisGame::tick()
 {
@@ -91,6 +119,8 @@ void TetrisGame::tick()
     constexpr uint8_t MAX_DATA = 4 * 2 * 2 + 1;
     uint8_t data[2];
     const uint8_t collided = _gameMap.hasCollided(_selected_piece);
+
+    _this_tick = false;
 
     if (collided == COLLISION_NOT_DETECTED)
     {

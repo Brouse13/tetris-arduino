@@ -31,12 +31,16 @@ public:
 
     void rotate();
 
+    void sack();
+
     void tick();
 private:
     MqttClient*     _mqttClient;
     GameMap         _gameMap;
     piece_entity_t  _selected_piece;
     piece_entity_t  _next_piece;
+    piece_t         _sack_piece;
+    uint8_t         _this_tick;
     uint16_t        _score;
     uint8_t         _loose;
     uint8_t         _playing;
