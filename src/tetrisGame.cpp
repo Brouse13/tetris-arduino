@@ -170,6 +170,7 @@ void TetrisGame::tick()
 
     // FIXME Fix checkLine method
     const uint8_t lines = _gameMap.checkLine();
+    if (lines == 4) _score += lines * SCORE_LINE_MULTIPLIER;
     _score += lines * SCORE_LINE_MULTIPLIER;
     _score += SCORE_PIECE_PLACEMENT;
 
@@ -180,7 +181,7 @@ void TetrisGame::tick()
 
     // Send score
     data[0] = static_cast<uint8_t>(_score >> 8);
-    data[1] = static_cast<uint8_t>(_score & 0xF);
+    data[1] = static_cast<uint8_t>(_score & 0xFF);
     _mqttClient->publish("tetris/score", data, 2);
 
     _this_tick = false;

@@ -11,7 +11,7 @@
 
 #include "mqttClient.h"
 
-#define SCORE_LINE_MULTIPLIER   1000
+#define SCORE_LINE_MULTIPLIER   200
 #define SCORE_PIECE_PLACEMENT   10
 
 #define START_PIECE_POSITION    {MAP_WIDTH / 2, 0}
