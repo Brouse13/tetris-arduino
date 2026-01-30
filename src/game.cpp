@@ -60,7 +60,6 @@ void loop()
             tick = 0;
         }
         mqttClient.loop();
-        delay(100);
     }
 }
 

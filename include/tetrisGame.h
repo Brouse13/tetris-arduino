@@ -30,6 +30,7 @@ public:
     void move(direction_t direction);
 
     void rotate();
+    void publishNewPos() const;
 
     void sack();
 

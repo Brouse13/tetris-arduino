@@ -70,18 +70,44 @@ void TetrisGame::move(const direction_t direction)
 
 void TetrisGame::rotate()
 {
-    const auto currentRotation = _selected_piece.rotation;
+    const auto originalRotation = _selected_piece.rotation;
+    const auto originalPos = _selected_piece.pos;
 
-    _selected_piece.rotation = static_cast<rotation_t>((static_cast<uint8_t>(_selected_piece.rotation) + 1) % 4);
+    switch (_selected_piece.rotation) {
+        case rotation_t::R0:   _selected_piece.rotation = rotation_t::R90;  break;
+        case rotation_t::R90:  _selected_piece.rotation = rotation_t::R180; break;
+        case rotation_t::R180: _selected_piece.rotation = rotation_t::R270; break;
+        case rotation_t::R270: _selected_piece.rotation = rotation_t::R0;   break;
+    }
+
     if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED)
     {
-        uint8_t data[4 * 2 * 2];
-        saveCurrentPostion(data, _selected_piece);
-        _mqttClient->publish("tetris/newPos", data, 4 * 2 * 2);
+        publishNewPos();
         return;
     }
 
-    _selected_piece.rotation = currentRotation;
+    _selected_piece.pos.x += 1;
+    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED) {
+        publishNewPos();
+        return;
+    }
+
+    _selected_piece.pos.x -= 2;
+    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED) {
+        publishNewPos();
+        return;
+    }
+
+    _selected_piece.pos = originalPos;
+    _selected_piece.rotation = originalRotation;
+}
+
+// Función auxiliar para no repetir código del MQTT
+void TetrisGame::publishNewPos() const
+{
+    uint8_t data[16]; // 4 bloques * 2 ejes * 2 bytes (si usas int16) o ajustes según tu protocolo
+    saveCurrentPostion(data, _selected_piece);
+    _mqttClient->publish("tetris/newPos", data, 16);
 }
 
 void TetrisGame::sack()
