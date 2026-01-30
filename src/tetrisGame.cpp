@@ -133,7 +133,7 @@ void TetrisGame::tick()
 
 void TetrisGame::generatePiece(piece_entity_t &piece)
 {
-    uint8_t rand = random(1, 7) + 1;
+    uint8_t rand = random(1, 8);
     piece.type = static_cast<piece_t>(rand);
     piece.rotation = rotation_t::R0;
     piece.pos = START_PIECE_POSITION;
