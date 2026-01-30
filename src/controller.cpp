@@ -10,9 +10,11 @@
 #define PIN_JOYSTICK_Y   A0
 #define PIN_JOYSTICK_X   A1
 #define PIN_JOYSTICK_BTN A2
+#define PIN_BTN          A3
 
 rotation_t rotation;
 uint8_t button;
+uint8_t start = 0;
 
 void processMovement();
 void processRotation();
@@ -24,6 +26,7 @@ void setup()
     pinMode(PIN_JOYSTICK_X, INPUT);
     pinMode(PIN_JOYSTICK_Y, INPUT);
     pinMode(PIN_JOYSTICK_BTN, INPUT);
+    pinMode(PIN_BTN, INPUT);
 
     // When a new piece arrives or the game starts, the direction must be reseted
     mqttClient.setup(MQTT_HOST, MQTT_PORT);
@@ -40,11 +43,18 @@ void loop()
         processMovement();
         processRotation();
 
+        const uint16_t startValue = analogRead(PIN_BTN);
+        if (startValue > 600 && start == 0)
+        {
+            uint8_t data[1];
+            mqttClient.publish("tetris/onInit", data, 1);
+            start = 1;
+        }
+
         if (buttonValue == LOW)
         {
             constexpr uint8_t data[1] = { 1 };
             mqttClient.publish("tetris/button", data, 1);
-            Serial.println("pressed");
         }
 
         mqttClient.loop();
@@ -66,7 +76,6 @@ void processMovement()
 
     const uint8_t data[1] = { static_cast<uint8_t>(direction) };
     mqttClient.publish("tetris/move", data, 1);
-    Serial.println("move");
 }
 
 void processRotation()
@@ -77,5 +86,4 @@ void processRotation()
 
     constexpr uint8_t data[1] = { 1 };
     mqttClient.publish("tetris/rotate", data, 1);
-    Serial.println("rotate");
 }
