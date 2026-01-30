@@ -146,8 +146,6 @@ void TetrisGame::tick()
     uint8_t data[2];
     const uint8_t collided = _gameMap.hasCollided(_selected_piece);
 
-    _this_tick = false;
-
     if (collided == COLLISION_NOT_DETECTED)
     {
         saveCurrentPostion(data, _selected_piece);
@@ -184,6 +182,8 @@ void TetrisGame::tick()
     data[0] = static_cast<uint8_t>(_score >> 8);
     data[1] = static_cast<uint8_t>(_score & 0xF);
     _mqttClient->publish("tetris/score", data, 2);
+
+    _this_tick = false;
 }
 
 void TetrisGame::generatePiece(piece_entity_t &piece)
