@@ -2,9 +2,6 @@
 // Created by Brouse on 26/01/2026.
 //
 
-#ifdef CONTROLLER_H
-#define CONTROLLER_H
-
 #include <Arduino.h>
 
 #include <config.h>
@@ -82,5 +79,3 @@ void processRotation()
     mqttClient.publish("tetris/rotate", data, 1);
     Serial.println("rotate");
 }
-
-#endif // CONTROLLER_H

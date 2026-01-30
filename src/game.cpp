@@ -2,8 +2,6 @@
 // Created by Brouse on 26/01/2026.
 //
 
-#ifdef GAME
-
 #include <Arduino.h>
 
 #include <config.h>
@@ -97,7 +95,4 @@ void processControls()
         askForMovement = direction::NONE;
     }
 }
-
-
-#endif // GAME
 
