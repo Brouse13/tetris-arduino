@@ -16,7 +16,6 @@ TetrisGame::TetrisGame(MqttClient &mqttClient) : _selected_piece(), _next_piece(
 void TetrisGame::init()
 {
     _seed = analogRead(A8);
-    rand();
     randomSeed(_seed);
     generatePiece(_next_piece);
     generatePiece(_selected_piece);
@@ -57,7 +56,13 @@ void TetrisGame::move(const direction_t direction)
         default:                                             break;
     }
 
-    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED) return;
+    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED)
+    {
+        uint8_t data[4 * 2 * 2];
+        saveCurrentPostion(data, _selected_piece);
+        _mqttClient->publish("tetris/newPos", data, 4 * 2 * 2);
+        return;
+    }
 
     _selected_piece.pos = currentPosition;
 }
@@ -67,7 +72,13 @@ void TetrisGame::rotate()
     const auto currentRotation = _selected_piece.rotation;
 
     _selected_piece.rotation = static_cast<rotation_t>((static_cast<uint8_t>(_selected_piece.rotation) + 1) % 4);
-    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED) return;
+    if (_gameMap.hasCollided(_selected_piece) == COLLISION_NOT_DETECTED)
+    {
+        uint8_t data[4 * 2 * 2];
+        saveCurrentPostion(data, _selected_piece);
+        _mqttClient->publish("tetris/newPos", data, 4 * 2 * 2);
+        return;
+    }
 
     _selected_piece.rotation = currentRotation;
 }
