@@ -30,7 +30,7 @@ public:
     uint8_t* mac_address;
 
     const IPAddress ip_address;
-    const IPAddress gateway = IPAddress(192, 168, 1, 1);
+    const IPAddress gateway = IPAddress(192, 168, 132, 7);
 
     const IPAddress dns_server = IPAddress(8, 8, 8, 8);
 };

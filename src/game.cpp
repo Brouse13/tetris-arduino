@@ -50,13 +50,14 @@ void loop()
 {
     while (true)
     {
+        processControls();
         if (tick)
         {
-            processControls();
             game.tick();
-            mqttClient.loop();
             tick = 0;
         }
+        mqttClient.loop();
+        delay(100);
     }
 }
 
@@ -79,6 +80,7 @@ void onRotate(byte* payload, unsigned int length)
     askForRotation = 1;
 }
 
+//TODO: Send mqtt to Processing to update move
 void processControls()
 {
     // Process rotation

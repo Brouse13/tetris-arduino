@@ -10,6 +10,7 @@ MqttClient* MqttClient::_instance;
 void MqttClient::mqttCallback(char* topic, uint8_t* payload, unsigned int length)
 {
     if (!_instance) return;
+    Serial.println(topic);
 
     _instance->handleMessage(topic, payload, length);
 }
