@@ -12,7 +12,7 @@
 
 #define PIN_JOYSTICK_Y   A0
 #define PIN_JOYSTICK_X   A1
-#define PIN_JOYSTICK_BTN 13
+#define PIN_JOYSTICK_BTN A2
 
 rotation_t rotation;
 uint8_t button;
@@ -51,7 +51,7 @@ void loop()
         }
 
         mqttClient.loop();
-        delay(100);
+        delay(200);
     }
 }
 
