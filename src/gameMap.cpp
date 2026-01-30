@@ -65,23 +65,27 @@ uint8_t GameMap::checkLine()
 
     for (int y = MAP_HEIGHT - 1; y >= 0; --y)
     {
-        if (!fullLine(y)) continue;
+        if (!fullLine(y))
+            continue;
 
         constexpr size_t rowSize = MAP_WIDTH * sizeof(uint8_t);
 
-        void* start = &_map[index({0, 0})];
-        void* copyStart = &_map[index({0, 1})];
+        memmove(
+            &_map[index({0, 1})],   // destination
+            &_map[index({0, 0})],   // source
+            rowSize * y                           // number of bytes
+        );
 
-        memmove(start, copyStart, rowSize * y);
-        memset(start, 0, rowSize);
+        // Clear the top row
+        memset(&_map[index({0, 0})], 0, rowSize);
 
         clearedLines++;
-
         ++y;
     }
 
     return clearedLines;
 }
+
 
 uint8_t GameMap::fullLine(const uint8_t line) const
 {

@@ -115,8 +115,7 @@ void TetrisGame::tick()
     generatePiece(_next_piece);
 
     // FIXME Fix checkLine method
-    const uint8_t lines = 0;
-    //const uint8_t lines = _gameMap.checkLine();
+    const uint8_t lines = _gameMap.checkLine();
     _score += lines * SCORE_LINE_MULTIPLIER;
     _score += SCORE_PIECE_PLACEMENT;
 
