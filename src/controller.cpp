@@ -58,8 +58,8 @@ void processMovement()
     const uint16_t yValue = analogRead(PIN_JOYSTICK_Y);
     auto direction = direction::NONE;
 
-    if      (xValue < 400) direction = direction::LEFT;
-    else if (xValue > 600) direction = direction::RIGHT;
+    if      (xValue < 400) direction = direction::RIGHT;
+    else if (xValue > 600) direction = direction::LEFT;
     else if (yValue > 600) direction = direction::DOWN;
 
     if (direction == direction::NONE) return;
