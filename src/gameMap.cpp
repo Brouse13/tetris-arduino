@@ -89,11 +89,12 @@ uint8_t GameMap::checkLine()
 
 uint8_t GameMap::fullLine(const uint8_t line) const
 {
-    const uint8_t start = index({0, line});
+    const uint16_t start = index({0, line});
+    const uint16_t end   = start + MAP_WIDTH;
 
-    for (int index = start; index < MAP_WIDTH; ++index)
+    for (uint16_t i = start; i < end; ++i)
     {
-        if (_map[index] == 0) return 0;
+        if (_map[i] == 0) return 0;
     }
     return 1;
 }
