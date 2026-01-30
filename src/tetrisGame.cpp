@@ -130,7 +130,7 @@ void TetrisGame::sack()
         generatePiece(_selected_piece);
         _selected_piece.type = piece;
         _this_tick = true;
-        data[0] = 1;
+        data[0] = 0;
     }
 
     saveCurrentPostion(&data[1], _selected_piece);
